@@ -1,0 +1,14 @@
+[Unit]
+Description=CouchDB2
+
+[Service]
+ExecStart=/home/couchdb/couchdb/bin/couchdb
+Restart=always
+User=couchdb
+Group=couchdb
+Environment=PATH=/usr/bin:/usr/local/bin:/bin
+
+WorkingDirectory=/home/couchdb/couchdb/bin
+
+[Install]
+WantedBy=multi-user.target
