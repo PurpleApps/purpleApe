@@ -6,9 +6,10 @@ var exclude = require('./excludeterm.js').exclusion;
 var nano = require('nano')('http://localhost:5984');
 nano.db.create('respondent');
 nano.db.create('appellant');
+nano.db.create('docStats');
+
 var resp = nano.db.use('respondent');
 var appe = nano.db.use('appellant');
-nano.db.create('docStats');
 var docStats = nano.db.use('docStats');
 
 fs.readdir('/vagrant/import', function( err, files ) {
@@ -52,40 +53,11 @@ function processFile(files) {
                 }
               }
               terms = Array.from(new Set(terms));
+              console.log(outcome);
               if(side.indexOf('respondent') > -1) {
-                for(i in terms) {
-                  resp.get(terms[i], function(err, body){
-                    var w = 0;
-                    var l = 0;
-                    if(!err) {
-                      w = body.wins;
-                      l = body.losses;
-                    }
-                    if(outcome.indexOf('positive')) {
-                      w = w+1;
-                    } else {
-                      l = l+1;
-                    }
-                    resp.insert({_id: terms[i], wins: w, losses: l}, function(err, body){});
-                  });
-                }
+                storeTerms(resp, terms, outcome, files);
               } else {
-                for(i in terms) {
-                  resp.get(terms[i], function(err, body){
-                    var w = 0;
-                    var l = 0;
-                    if(!err) {
-                      w = body.wins;
-                      l = body.losses;
-                    }
-                    if(outcome.indexOf('positive')) {
-                      w = w+1;
-                    } else {
-                      l = l+1;
-                    }
-                    resp.insert({_id: terms[i], wins: w, losses: l}, function(err, body){});
-                  });
-                }
+                storeTerms(appe, terms, outcome, files);
               }
               docStats.get('docStat', function(err, body) {
                 var w = 0;
@@ -100,8 +72,8 @@ function processFile(files) {
                   l = l+1;
                 }
                 docStats.insert({_id: 'docStat', wins: w, losses: l}, function(err, body){});
-                processFile(files);
               });
+              processFile(files);
             });
           });
         } else processFile(files);
@@ -111,4 +83,30 @@ function processFile(files) {
   */
 } else processFile(files);
 
+}
+
+function storeTerms(db, terms, loutcome) {
+  if(terms.length == 0){
+    return;
+  }
+  var term = terms.pop().replace('[','').replace(']','').replace(' ','');
+    db.get(term,{ include_docs: true}, function(err, body){
+      var d = {_id: term, wins: 0, losses: 0};
+      if(!err) {
+        d.wins = body.wins;
+        d.losses = body.losses;
+        d._rev = body._rev;
+        d._id = body._id;
+      }
+      if(loutcome.indexOf('positive')) {
+        d.wins = d.wins+1;
+      } else {
+        d.losses = d.losses+1;
+      }
+      db.insert(d, function(err, body){
+        if(err)
+          console.log(err);
+        storeTerms(db, terms, loutcome)
+      });
+    });
 }
