@@ -33,9 +33,9 @@ app.post('/analyze', jsonParser, function(req,res) {
     terms = Array.from(new Set(terms));
     console.log(terms);
     var inv = false;
-    if((req.body.resp == 'appealing' && req.body.emp == 'employer') || (req.body.resp == 'responding' && req.body.emp == 'employee'))
+    if((req.body.resp == 'responding' && req.body.emp == 'employee') || (req.body.resp == 'responding' && req.body.emp == 'employer'))
       inv = true;
-    if(req.body.resp == 'appealing') {
+    if((req.body.resp == 'appealing' && req.body.emp == 'employer') || (req.body.resp == 'responding' && req.body.emp == 'employee')) {
       getTermResults(appe, terms, {wins: 0, losses: 0, topWins: [], topLosses: []}, res, inv);
     } else {
       getTermResults(resp, terms, {wins: 0, losses: 0, topWins: [], topLosses: []}, res, inv);
@@ -47,7 +47,7 @@ function getTermResults(db, terms, result, response, inv) {
   if(terms.length == 0){
     result.topWins.sort(customSort);
     result.topLosses.sort(customSort);
-    result.percent = (result.wins * 1.0) / (result.losses * 1.0);
+    result.percent = (result.wins * 1.0) / (result.wins * 1.0 + result.losses * 1.0);
     if(inv) {
       var tmp = result.topWins;
       result.topWins = result.topLosses;
