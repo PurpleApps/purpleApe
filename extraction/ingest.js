@@ -104,7 +104,7 @@ function processFile(files) {
               });
             });
           });
-        }
+        } else processFile(files);
       });
     });
   /*
