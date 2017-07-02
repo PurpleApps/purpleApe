@@ -1,0 +1,62 @@
+/* layout.css Style */
+.upload-drop-zonem {
+  height: 200px;
+  border-width: 2px;
+  margin-bottom: 20px;
+}
+
+/* skin.css Style*/
+.upload-drop-zone {
+  color: #ccc;
+  border-style: dashed;
+  border-color: #ccc;
+  line-height: 200px;
+  text-align: center
+}
+.upload-drop-zone.drop {
+  color: #222;
+  border-color: #222;
+}
+
+h1 {
+  color: #6e2d91;
+}
+
+.blackground{
+  background-color: #A2A4A3;
+  color: #6e2d91;
+  margin-bottom: 10px;
+}
+div > img {
+  margin: 5px;
+  margin-left:10px;
+  height: 60px;
+}
+
+i > img{
+  height: 100px;
+}
+
+#topterms, #flopterms, #totalresult{
+  background-color: white;
+  margin:20px;
+}
+
+#spin{
+  color: white;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+#proceed{
+  margin-bottom: 10px;
+}
+
+
+#query{
+  background-color: #A2A4A3;
+}
+
+#result{
+  background-color: #6e2d91;
+}

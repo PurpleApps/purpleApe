@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Purple Ape</title>
+<link rel="stylesheet" type="text/css" href="style/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="style/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="style/css/style.css">
+<script src="library/jquery-3.2.1.min.js"></script>
+<script src="library/bootstrap.min.js"></script>
+</head>
+<body>
+  <div class="container" id="query">
+  <div class="row navbar blackground">
+    <div class="col-sm-1">
+      <div><img alt="Logo" src="style/pics/APE.png"></div>
+    </div>
+    <div class="col-sm-11 blackground">
+      <h1>Purple Ape</h1>
+    </div>
+  </div>
+  <div>
+    <form>
+  <div class="form-group">
+    <label for="inputText">Paste your text in here:</label>
+    <textarea class="form-control" rows="30" id="inputText"></textarea>
+  </div>
+  <div class=row>
+    <div class="col-sm-6">
+  <div class="form-group">
+    <label for="SelectType1">I am an</label>
+    <select class="form-control" id="SelectType1">
+      <option value="employee">employee</option>
+      <option value="employer">employer</option>
+    </select>
+  </div>
+</div>
+  <div class="col-sm-6">
+  <div class="form-group">
+    <label for="SelectType2">I am</label>
+    <select class="form-control" id="SelectType2">
+      <option value="appealing">appealing</option>
+      <option value="responding">responding</option>
+    </select>
+  </div>
+</div>
+</div>
+  <button type="submit" class="btn btn-default btn-block" id="proceed">Proceed</button>
+</div>
+</form>
+</div>
+<div class="container" id="result">
+
+  <div class="row">
+    <div class="col-sm-3" id="totalresult"></div>
+    <div class="col-sm-3" id="topterms">
+    </div>
+    <div class="col-sm-3" id="flopterms">
+    </div>
+  </div>
+<div>
+</div>
+</div>
+
+<script>
+$(document).ready(function(){
+   var $form = $('form');
+   $form.submit(function(){
+      $('#proceed').addClass('disabled');
+      $('#result').append('<div class="text-center" id="spin"><i class="fa-spin"><img alt="loading" src="style/pics/Ape-White.png"></i><h3>Please wait while proceeding.</h3></div>');
+      location.hash=("result");
+      $.ajax({
+        url: '/analyze',
+          type: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({text:$('#inputText').val(), emp: $('#SelectType1').val(), resp: $('#SelectType2').val()}),
+    success: function(response) {
+      $('#spin').remove();
+      $('#proceed').removeClass('disabled');
+      $('#totalresult').append('<h3>Your result is ' + Math.round((response.percent*100)) + '% chance of winning.');
+      $('#topterms').append('<h3 class="success">Successful Terms</h3><ol id="lst_top"></ol>');
+      $('#flopterms').append('<h3 class="danger">Unsuccessful Terms</h3><ol id="lst_flop"></ol>');
+
+      for(var i=0; i<6;i++){
+        $('#lst_top').append('<li>' + response.topWins[i].term + '</li>');
+        $('#lst_flop').append('<li>' + response.topLosses[i].term + '</li>');
+      }
+
+
+
+    }
+  }
+);
+     return false;
+   });
+});
+</script>
+
+</body>
+</html>
